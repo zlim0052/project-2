@@ -37,13 +37,13 @@
     <select id="metric-select">
       <option value="LSS1 Projects">LSS1 Projects</option>
       <option value="LSS1 Capacity (MW)">LSS1 Capacity (MW)</option>
-      <option value="LSS2 Projects">LSS2 Projects</option>
+      <option value="LSS2 Projects" selected>LSS2 Projects</option>  <!-- Default set here -->
       <option value="LSS2 Capacity (MW)">LSS2 Capacity (MW)</option>
     </select>
   </div>
 
-  <div id="title">LSS1 Projects</div>
-  <div id="description">This map shows the number of LSS1 Projects by state. The darker red regions indicate higher numbers of projects.</div>
+  <div id="title">LSS2 Projects</div> <!-- Default title set to LSS2 Projects -->
+  <div id="description">This map shows the number of LSS2 Projects by state. The darker red regions indicate higher numbers of projects.</div>
   <div id="vis"></div>
 
   <script>
@@ -107,7 +107,7 @@
           "mark": {"type": "geoshape", "stroke": "white"},
           "encoding": {
             "color": {
-              "field": "LSS1 Projects",  // Default field for color
+              "field": "LSS2 Projects",  // Default field for color
               "type": "quantitative",
               "scale": {
                 "type": "linear",
@@ -118,9 +118,8 @@
             },
             "tooltip": [
               {"field": "properties.name", "type": "nominal", "title": "State"},
-              {"field": "LSS1 Projects", "type": "quantitative", "title": "LSS1 Projects"},
-              {"field": "LSS1 Capacity (MW)", "type": "quantitative", "title": "LSS1 Capacity (MW)"},
               {"field": "LSS2 Projects", "type": "quantitative", "title": "LSS2 Projects"},
+              {"field": "LSS1 Capacity (MW)", "type": "quantitative", "title": "LSS1 Capacity (MW)"},
               {"field": "LSS2 Capacity (MW)", "type": "quantitative", "title": "LSS2 Capacity (MW)"}
             ]
           }
@@ -148,8 +147,8 @@
       }).catch(console.warn);
     }
 
-    // Initial render
-    updateSpec("LSS1 Projects");
+    // Initial render with LSS2 Projects as the default
+    updateSpec("LSS2 Projects");
 
     // Add event listener to the dropdown
     document.getElementById('metric-select').addEventListener('change', function(event) {
