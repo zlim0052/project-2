@@ -1,0 +1,14 @@
+State,Number of Diabetes Patients,state,date,sex,age,ethnicity,population,Diabetes Density (%),Adjusted Population
+Johor,282284,Johor,2023-01-01,both,overall,overall,4107.2,6.87290611608882,4107200.0
+Kedah,175429,Kedah,2023-01-01,both,overall,overall,2189.3,8.013017859589823,2189300.0
+Kelantan,71942,Kelantan,2023-01-01,both,overall,overall,1859.8,3.8682654048822456,1859800.0
+Melaka,105828,Melaka,2023-01-01,both,overall,overall,1028.3,10.291549158805797,1028300.0
+Negeri Sembilan,132906,Negeri Sembilan,2023-01-01,both,overall,overall,1224.9,10.850355131031105,1224900.0
+Pahang,103980,Pahang,2023-01-01,both,overall,overall,1643.2,6.327896786757546,1643200.0
+Perak,191881,Perak,2023-01-01,both,overall,overall,2541.2,7.55080277034472,2541200.0
+Perlis,36264,Perlis,2023-01-01,both,overall,overall,293.1,12.372569089048106,293100.0
+Pulau Pinang,106402,Pulau Pinang,2023-01-01,both,overall,overall,1772.6,6.002595058106736,1772600.0
+Sabah,63564,Sabah,2023-01-01,both,overall,overall,3596.7,1.7672866794561684,3596700.0
+Sarawak,186943,Sarawak,2023-01-01,both,overall,overall,2502.3,7.470846820924749,2502300.0
+Selangor,316316,Selangor,2023-01-01,both,overall,overall,7209.7,4.387367019432154,7209700.0
+Terengganu,80964,Terengganu,2023-01-01,both,overall,overall,1210.0,6.6912396694214875,1210000.0
