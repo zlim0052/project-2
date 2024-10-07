@@ -1,17 +1,17 @@
-,State,Number of Diabetes Patients,state,date,sex,age,ethnicity,population,Diabetes Density (%)
-0,Johor,282284,Johor,2023-01-01,both,overall,overall,4107.2,6.87290611608882
-1,Kedah,175429,Kedah,2023-01-01,both,overall,overall,2189.3,8.013017859589823
-2,Kelantan,71942,Kelantan,2023-01-01,both,overall,overall,1859.8,3.8682654048822456
-3,Melaka,105828,Melaka,2023-01-01,both,overall,overall,1028.3,10.291549158805797
-4,Negeri Sembilan,132906,Negeri Sembilan,2023-01-01,both,overall,overall,1224.9,10.850355131031105
-5,Pahang,103980,Pahang,2023-01-01,both,overall,overall,1643.2,6.327896786757546
-6,Perak,191881,Perak,2023-01-01,both,overall,overall,2541.2,7.55080277034472
-7,Perlis,36264,Perlis,2023-01-01,both,overall,overall,293.1,12.372569089048106
-8,Pulau Pinang,106402,Pulau Pinang,2023-01-01,both,overall,overall,1772.6,6.002595058106736
-9,Sabah,63564,Sabah,2023-01-01,both,overall,overall,3596.7,1.7672866794561684
-10,Sarawak,186943,Sarawak,2023-01-01,both,overall,overall,2502.3,7.470846820924749
-11,Selangor,316316,Selangor,2023-01-01,both,overall,overall,7209.7,4.387367019432154
-12,Terengganu,80964,Terengganu,2023-01-01,both,overall,overall,1210.0,6.6912396694214875
-13,WP Kuala Lumpur,85943,W.P. Kuala Lumpur,2023-01-01,both,overall,overall,2005.7,4.284937926908311
-14,WP Labuan,3514,W.P. Labuan,2023-01-01,both,overall,overall,99.0,3.5494949494949495
-15,WP Putrajaya,12300,W.P. Putrajaya,2023-01-01,both,overall,overall,118.8,10.353535353535353
+State,Number of Diabetes Patients,state,date,sex,age,ethnicity,population,Diabetes Density (%)
+Johor,282284,Johor,2023-01-01,both,overall,overall,4107.2,6.87290611608882
+Kedah,175429,Kedah,2023-01-01,both,overall,overall,2189.3,8.013017859589823
+Kelantan,71942,Kelantan,2023-01-01,both,overall,overall,1859.8,3.8682654048822456
+Melaka,105828,Melaka,2023-01-01,both,overall,overall,1028.3,10.291549158805797
+Negeri Sembilan,132906,Negeri Sembilan,2023-01-01,both,overall,overall,1224.9,10.850355131031105
+Pahang,103980,Pahang,2023-01-01,both,overall,overall,1643.2,6.327896786757546
+Perak,191881,Perak,2023-01-01,both,overall,overall,2541.2,7.55080277034472
+Perlis,36264,Perlis,2023-01-01,both,overall,overall,293.1,12.372569089048106
+Pulau Pinang,106402,Pulau Pinang,2023-01-01,both,overall,overall,1772.6,6.002595058106736
+Sabah,63564,Sabah,2023-01-01,both,overall,overall,3596.7,1.7672866794561684
+Sarawak,186943,Sarawak,2023-01-01,both,overall,overall,2502.3,7.470846820924749
+Selangor,316316,Selangor,2023-01-01,both,overall,overall,7209.7,4.387367019432154
+Terengganu,80964,Terengganu,2023-01-01,both,overall,overall,1210.0,6.6912396694214875
+WP K Lumpur,85943,WP K Lumpur,2023-01-01,both,overall,overall,2005.7,4.284937926908311
+WP Labuan,3514,WP Labuan,2023-01-01,both,overall,overall,99.0,3.5494949494949495
+WP Putrajaya,12300,WP Putrajaya,2023-01-01,both,overall,overall,118.8,10.353535353535353
