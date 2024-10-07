@@ -1,4 +1,4 @@
-Entity,Code,Year,Diabetes_prevalence,GDP_per_capita,Continent
+Entity,Code,Year,Diabetes prevalence (% of population ages 20 to 79),GDP per capita,Continent
 Abkhazia,OWID_ABK,2015,,,Asia
 Afghanistan,AFG,2002,,1280.4631,
 Afghanistan,AFG,2003,,1292.3335,
