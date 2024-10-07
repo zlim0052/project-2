@@ -1,0 +1,16 @@
+Age Group,Number of Patients,Percentage,Sex,Ethnicity
+<18,289,0.01,Male,Malay
+18-19,225,0.01,Male,Chinese
+20-24,1762,0.1,Male,Indian
+25-29,6977,0.35,Male,Others
+30-34,18482,0.94,Male,Malay
+35-39,40386,2.07,Male,Chinese
+40-44,68469,3.52,Male,Indian
+45-49,104111,5.34,Male,Others
+50-54,154701,7.94,Male,Malay
+55-59,232261,11.93,Male,Chinese
+60-64,296528,15.24,Male,Indian
+65-69,312533,16.1,Male,Others
+70-74,274558,14.1,Male,Malay
+75-79,191869,9.85,Male,Chinese
+>80,242982,12.5,Male,Indian
