@@ -7,16 +7,34 @@
   <style>
     body {
       margin: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
+      display: block;
+      overflow-y: scroll; /* Make the page scrollable */
+      font-family: Arial, sans-serif;
+    }
+    #scatterplot-container {
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    #scatterplot {
+      width: 100%;
+      height: 600px; /* Set fixed height */
+    }
+    #scatterplot-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    #scatterplot-description {
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #555;
     }
     #dropdown-container {
       margin: 20px;
       text-align: center;
-    }
-    #vis {
-      flex-grow: 1;
     }
     #title {
       text-align: center;
@@ -29,47 +47,70 @@
       font-size: 16px;
       margin-bottom: 10px;
     }
+    #vis {
+      width: 100%;
+      height: 500px; /* You can adjust the map height */
+      padding: 20px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Scatter Plot Section -->
+  <div id="scatterplot-container">
+    <div id="scatterplot-title">Scatter Plot of Diabetes Patients by Age Group</div>
+    <div id="scatterplot-description">
+      This scatter plot visualizes the relationship between GDP per capita and Diabetes Prevalence in various countries for the year 2021. 
+      Logarithmic scaling is used for GDP to accommodate a wide range of values.
+    </div>
+    <div id="scatterplot"></div> <!-- Scatter plot at the top -->
+  </div>
+
+  <!-- Dropdown for Map Visualizations -->
   <div id="dropdown-container">
     <label for="metric-select">Select Metric:</label>
     <select id="metric-select">
-      <option value="LSS1 Projects">LSS1 Projects</option>
-      <option value="LSS1 Capacity (MW)">LSS1 Capacity (MW)</option>
-      <option value="LSS2 Projects" selected>LSS2 Projects</option>  <!-- Default set here -->
-      <option value="LSS2 Capacity (MW)">LSS2 Capacity (MW)</option>
+      <option value="Diabetes Density (%)" selected>Diabetes Density (%)</option>
+      <option value="Hypertension Prevalence (%)">Hypertension Prevalence (%)</option>
+      <option value="Dyslipidemia Prevalence (%)">Dyslipidemia Prevalence (%)</option>
     </select>
   </div>
 
-  <div id="title">LSS2 Projects</div> <!-- Default title set to LSS2 Projects -->
-  <div id="description">This map shows the number of LSS2 Projects by state. The darker red regions indicate higher numbers of projects.</div>
-  <div id="vis"></div>
+  <!-- Map Visualization Section -->
+  <div id="title">Diabetes Density (%) by Region</div>
+  <div id="description">This map shows the Diabetes Density (%) by region in Malaysia. Darker colors indicate higher rates.</div>
+  <div id="vis"></div> <!-- Map section below -->
 
   <script>
     const metricDetails = {
-      "LSS1 Projects": {
-        "title": "LSS1 Projects",
-        "description": "This map shows the number of LSS1 Projects by state. The darker red regions indicate higher numbers of projects."
+      "Diabetes Density (%)": {
+        "title": "Diabetes Density (%) by Region",
+        "description": "This map shows the Diabetes Density (%) by region in Malaysia. Darker colors indicate higher rates.",
+        "domain": [0, 15],
+        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/Adjusted_Diabetes_Density_by_State.csv",
+        "fields": ["Diabetes Density (%)"]
       },
-      "LSS1 Capacity (MW)": {
-        "title": "LSS1 Capacity (MW)",
-        "description": "This map shows the total capacity (MW) of LSS1 Projects by state. Higher capacity regions are shown in darker red."
+      "Hypertension Prevalence (%)": {
+        "title": "Hypertension Prevalence (%) by Region",
+        "description": "This map shows the Hypertension Prevalence (%) by region in Malaysia. Darker colors indicate higher rates.",
+        "domain": [70, 100],
+        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/malaysia_obesity_diabetes_data.csv",
+        "fields": ["Hypertension Prevalence (%)"]
       },
-      "LSS2 Projects": {
-        "title": "LSS2 Projects",
-        "description": "This map shows the number of LSS2 Projects by state. The darker red regions indicate higher numbers of projects."
-      },
-      "LSS2 Capacity (MW)": {
-        "title": "LSS2 Capacity (MW)",
-        "description": "This map shows the total capacity (MW) of LSS2 Projects by state. Higher capacity regions are shown in darker red."
+      "Dyslipidemia Prevalence (%)": {
+        "title": "Dyslipidemia Prevalence (%) by Region",
+        "description": "This map shows the Dyslipidemia Prevalence (%) by region in Malaysia. Darker colors indicate higher rates.",
+        "domain": [60, 100],
+        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/malaysia_obesity_diabetes_data.csv",
+        "fields": ["Dyslipidemia Prevalence (%)"]
       }
     };
 
-    const baseSpec = {
+    const baseMapSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
       "width": "container",
-      "height": "container",
+      "height": 500, /* Map height set to 500px */
       "projection": {"type": "equalEarth"},
       "data": {
         "url": "https://raw.githubusercontent.com/mptwaktusolat/jakim.geojson/refs/heads/master/malaysia.state.geojson",
@@ -77,19 +118,13 @@
       },
       "transform": [
         {
-          "lookup": "properties.name",  // Field in GeoJSON
+          "lookup": "properties.name",
           "from": {
-            "data": {
-              "url": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/cleaned_lss_data_corrected.csv",
-              "format": {"type": "csv"}
-            },
-            "key": "State",  // Field in CSV
-            "fields": ["LSS1 Projects", "LSS1 Capacity (MW)", "LSS2 Projects", "LSS2 Capacity (MW)"]
+            "data": {"url": ""},
+            "format": {"type": "csv"},
+            "key": "State",
+            "fields": []
           }
-        },
-        {
-          "calculate": "datum['LSS1 Projects'] == null ? 0 : datum['LSS1 Projects']",  // Fill null values
-          "as": "LSS1 Projects"
         }
       ],
       "layer": [
@@ -107,48 +142,133 @@
           "mark": {"type": "geoshape", "stroke": "white"},
           "encoding": {
             "color": {
-              "field": "LSS2 Projects",  // Default field for color
+              "field": "Diabetes Density (%)",
               "type": "quantitative",
               "scale": {
                 "type": "linear",
-                "domain": [0, 75],  // Domain of the data
-                "range": ["#fff5f0", "#67000d"],  // Light red to dark red
-                "steps": 75  // 50 steps in the saturation scale
+                "domain": [0, 20],
+                "range": ["#f7fbff", "#08306b"]
               }
             },
             "tooltip": [
               {"field": "properties.name", "type": "nominal", "title": "State"},
-              {"field": "LSS2 Projects", "type": "quantitative", "title": "LSS2 Projects"},
-              {"field": "LSS1 Capacity (MW)", "type": "quantitative", "title": "LSS1 Capacity (MW)"},
-              {"field": "LSS2 Capacity (MW)", "type": "quantitative", "title": "LSS2 Capacity (MW)"}
+              {"field": "Diabetes Density (%)", "type": "quantitative", "title": "Diabetes Density (%)"},
+              {"field": "Hypertension Prevalence (%)", "type": "quantitative", "title": "Hypertension Prevalence (%)"},
+              {"field": "Dyslipidemia Prevalence (%)", "type": "quantitative", "title": "Dyslipidemia Prevalence (%)"}
             ]
           }
         }
       ]
     };
 
+    const scatterSpec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "A scatterplot showing diabetes prevalence versus GDP per capita by country for 2021.",
+  "width": "container",
+  "height": 600,
+  "data": {
+    "url": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/diabetes%20prevalence.csv",
+    "format": {"type": "csv"}
+  },
+  "transform": [
+    {
+      "filter": "datum.Year == 2021 && datum['Diabetes prevalence (% of population ages 20 to 79)'] != null && datum['GDP per capita'] != null"
+    },
+    {
+      "calculate": "toNumber(datum['GDP per capita'])",
+      "as": "GDP_per_capita"
+    },
+    {
+      "calculate": "toNumber(datum['Diabetes prevalence (% of population ages 20 to 79)'])",
+      "as": "Diabetes_prevalence"
+    }
+  ],
+  "mark": "circle",
+  "encoding": {
+    "x": {
+      "field": "GDP_per_capita",
+      "type": "quantitative",
+      "title": "GDP per capita (constant international-$)",
+      "scale": {
+        "type": "log",  // Logarithmic scale
+        "domain": [1, 1100000],  // Start just above 0
+        "nice": false
+      },
+      "axis": {
+        "grid": true,
+        "ticks": true,
+        "tickValues": [1, 5000, 10000, 50000, 100000, 500000, 1100000],  // Manual tick values
+        "labelExpr": "datum.value < 10000 ? datum.value : datum.value / 1000 + 'k'"  // Format labels
+      }
+    },
+
+
+
+
+    "y": {
+      "field": "Diabetes_prevalence",
+      "type": "quantitative",
+      "title": "Diabetes Prevalence (% of population ages 20 to 79)",
+      "scale": {"domain": [0, 35]},
+      "axis": {"grid": true}
+    },
+    "color": {
+      "field": "Entity",
+      "type": "nominal",
+      "legend": {"title": "Country"}
+    },
+    "tooltip": [
+      {"field": "Entity", "type": "nominal", "title": "Country"},
+      {"field": "Diabetes_prevalence", "type": "quantitative", "title": "Diabetes Prevalence (%)"},
+      {"field": "GDP_per_capita", "type": "quantitative", "title": "GDP per capita"},
+      {"field": "Year", "type": "ordinal", "title": "Year"}
+    ]
+  }
+};
+
+
     function updateSpec(selectedMetric) {
       // Update the title and description based on the selected metric
       document.getElementById('title').innerText = metricDetails[selectedMetric].title;
       document.getElementById('description').innerText = metricDetails[selectedMetric].description;
 
-      // Update the visualization based on the selected metric
-      const updatedSpec = JSON.parse(JSON.stringify(baseSpec));
+      let updatedSpec = JSON.parse(JSON.stringify(baseMapSpec));
+
+      // Set the data URL based on the selected metric
+      updatedSpec.transform[0].from.data.url = metricDetails[selectedMetric].dataURL;
+
+      // Set the fields for the lookup based on the selected metric
+      updatedSpec.transform[0].from.fields = metricDetails[selectedMetric].fields;
+
+      // Set the correct color field and domain
       updatedSpec.layer[1].encoding.color.field = selectedMetric;
+      updatedSpec.layer[1].encoding.color.scale.domain = metricDetails[selectedMetric].domain;
+
+      // Adjust the tooltip for the selected metric
       updatedSpec.layer[1].encoding.tooltip[1].field = selectedMetric;
       updatedSpec.layer[1].encoding.tooltip[1].title = selectedMetric;
+
+      // Render the updated map spec
       vegaEmbed("#vis", updatedSpec, {mode: "vega-lite"}).then(result => {
         const view = result.view;
-
         view.runAfter(() => {
           const data = view.data("source_0");  // Check the dataset
-          console.log('Loaded Data:', data);  // Log the loaded data
+          console.log('Loaded Map Data:', data);  // Log the loaded data
         });
       }).catch(console.warn);
     }
 
-    // Initial render with LSS2 Projects as the default
-    updateSpec("LSS2 Projects");
+    // Initial render with Diabetes Density (%) as the default
+    updateSpec("Diabetes Density (%)");
+
+    // Render the scatter plot initially (always present)
+    vegaEmbed("#scatterplot", scatterSpec, {mode: "vega-lite"}).then(result => {
+      const view = result.view;
+      view.runAfter(() => {
+        const data = view.data("source_0");  // Check the dataset
+        console.log('Loaded Scatter Plot Data:', data);  // Log the loaded data
+      });
+    }).catch(console.warn);
 
     // Add event listener to the dropdown
     document.getElementById('metric-select').addEventListener('change', function(event) {
