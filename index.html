@@ -4,6 +4,8 @@
   <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.8"></script>
+  <!-- Move the D3.js import to the top to ensure it's loaded before any script that uses it -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
   <style>
     body {
       margin: 0;
@@ -11,28 +13,28 @@
       overflow-y: scroll; /* Make the page scrollable */
       font-family: Arial, sans-serif;
     }
-    #scatterplot-container {
+    #scatterplot-container, #linegraph-container {
       width: 100%;
       padding: 20px;
       box-sizing: border-box;
     }
-    #scatterplot {
+    #scatterplot, #linegraph {
       width: 100%;
       height: 600px; /* Set fixed height */
     }
-    #scatterplot-title {
+    #scatterplot-title, #linegraph-title {
       text-align: center;
       font-size: 28px;
       font-weight: bold;
       margin-bottom: 10px;
     }
-    #scatterplot-description {
+    #scatterplot-description, #linegraph-description {
       text-align: center;
       font-size: 16px;
       margin-bottom: 20px;
       color: #555;
     }
-    #dropdown-container {
+    #dropdown-container, #scatterplot-filter-container, #linegraph-filter-container {
       margin: 20px;
       text-align: center;
     }
@@ -53,6 +55,21 @@
       padding: 20px;
       box-sizing: border-box;
     }
+    /* Animation Controls */
+    #animation-controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #animation-controls button {
+      font-size: 16px;
+      padding: 10px 20px;
+      margin: 0 10px;
+    }
+    /* Multi-select dropdown styles */
+    select[multiple] {
+      width: 300px;
+      height: 150px;
+    }
   </style>
 </head>
 <body>
@@ -64,7 +81,31 @@
       This scatter plot visualizes the relationship between GDP per capita and Diabetes Prevalence in various countries for the year 2021. 
       Logarithmic scaling is used for GDP to accommodate a wide range of values.
     </div>
+    <!-- Scatter Plot Filters -->
+    <div id="scatterplot-filter-container">
+      <label for="country-select">Select Countries:</label><br>
+      <select id="country-select" multiple></select>
+    </div>
     <div id="scatterplot"></div> <!-- Scatter plot at the top -->
+  </div>
+
+  <!-- Line Graph Section -->
+  <div id="linegraph-container">
+    <div id="linegraph-title">Diabetes Prevalence in Malaysian States (2013-2023)</div>
+    <div id="linegraph-description">
+      This line graph shows the trend of diabetes prevalence over time for different states in Malaysia from 2013 to 2023.
+    </div>
+    <!-- Line Graph Filters -->
+    <div id="linegraph-filter-container">
+      <label for="state-select">Select States:</label><br>
+      <select id="state-select" multiple></select>
+    </div>
+    <!-- Animation Controls -->
+    <div id="animation-controls">
+      <button id="play">Play</button>
+      <button id="pause">Pause</button>
+    </div>
+    <div id="linegraph"></div> <!-- Line graph section -->
   </div>
 
   <!-- Dropdown for Map Visualizations -->
@@ -88,24 +129,32 @@
         "title": "Diabetes Density (%) by Region",
         "description": "This map shows the Diabetes Density (%) by region in Malaysia. Darker colors indicate higher rates.",
         "domain": [0, 15],
-        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/Adjusted_Diabetes_Density_by_State.csv",
+        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/main/Adjusted_Diabetes_Density_by_State.csv",
         "fields": ["Diabetes Density (%)"]
       },
       "Hypertension Prevalence (%)": {
         "title": "Hypertension Prevalence (%) by Region",
         "description": "This map shows the Hypertension Prevalence (%) by region in Malaysia. Darker colors indicate higher rates.",
         "domain": [70, 100],
-        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/malaysia_obesity_diabetes_data.csv",
+        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/main/malaysia_obesity_diabetes_data.csv",
         "fields": ["Hypertension Prevalence (%)"]
       },
       "Dyslipidemia Prevalence (%)": {
         "title": "Dyslipidemia Prevalence (%) by Region",
         "description": "This map shows the Dyslipidemia Prevalence (%) by region in Malaysia. Darker colors indicate higher rates.",
         "domain": [60, 100],
-        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/malaysia_obesity_diabetes_data.csv",
+        "dataURL": "https://raw.githubusercontent.com/zlim0052/project-2/main/malaysia_obesity_diabetes_data.csv",
         "fields": ["Dyslipidemia Prevalence (%)"]
       }
     };
+
+    // Variables to store selected countries and states
+    let selectedCountries = [];
+    let selectedStates = [];
+
+    // Variables to store datasets
+    let scatterData = [];
+    let lineGraphData = [];
 
     const baseMapSpec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -113,7 +162,7 @@
       "height": 500, /* Map height set to 500px */
       "projection": {"type": "equalEarth"},
       "data": {
-        "url": "https://raw.githubusercontent.com/mptwaktusolat/jakim.geojson/refs/heads/master/malaysia.state.geojson",
+        "url": "https://raw.githubusercontent.com/mptwaktusolat/jakim.geojson/master/malaysia.state.geojson",
         "format": {"type": "json", "property": "features"}
       },
       "transform": [
@@ -161,71 +210,136 @@
       ]
     };
 
-    const scatterSpec = {
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "A scatterplot showing diabetes prevalence versus GDP per capita by country for 2021.",
-  "width": "container",
-  "height": 600,
-  "data": {
-    "url": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/diabetes%20prevalence.csv",
-    "format": {"type": "csv"}
-  },
-  "transform": [
-    {
-      "filter": "datum.Year == 2021 && datum['Diabetes prevalence (% of population ages 20 to 79)'] != null && datum['GDP per capita'] != null"
-    },
-    {
-      "calculate": "toNumber(datum['GDP per capita'])",
-      "as": "GDP_per_capita"
-    },
-    {
-      "calculate": "toNumber(datum['Diabetes prevalence (% of population ages 20 to 79)'])",
-      "as": "Diabetes_prevalence"
-    }
-  ],
-  "mark": "circle",
-  "encoding": {
-    "x": {
-      "field": "GDP_per_capita",
-      "type": "quantitative",
-      "title": "GDP per capita (constant international-$)",
-      "scale": {
-        "type": "log",  // Logarithmic scale
-        "domain": [1, 1100000],  // Start just above 0
-        "nice": false
-      },
-      "axis": {
-        "grid": true,
-        "ticks": true,
-        "tickValues": [1, 5000, 10000, 50000, 100000, 500000, 1100000],  // Manual tick values
-        "labelExpr": "datum.value < 10000 ? datum.value : datum.value / 1000 + 'k'"  // Format labels
+    let scatterSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "description": "A scatterplot showing diabetes prevalence versus GDP per capita by country for 2021.",
+      "width": "container",
+      "height": 600,
+      "data": {"values": []}, // Will be populated dynamically
+      "transform": [
+        {
+          "filter": "datum.Year == 2021 && datum['Diabetes prevalence (% of population ages 20 to 79)'] != null && datum['GDP per capita'] != null"
+        },
+        {
+          "calculate": "toNumber(datum['GDP per capita'])",
+          "as": "GDP_per_capita"
+        },
+        {
+          "calculate": "toNumber(datum['Diabetes prevalence (% of population ages 20 to 79)'])",
+          "as": "Diabetes_prevalence"
+        },
+        // Filter based on selected countries
+        {
+          "filter": {"field": "Entity", "oneOf": []} // Will be updated dynamically
+        }
+      ],
+      "mark": "circle",
+      "encoding": {
+        "x": {
+          "field": "GDP_per_capita",
+          "type": "quantitative",
+          "title": "GDP per capita (constant international-$)",
+          "scale": {
+            "type": "log",  // Logarithmic scale
+            "domain": [1, 1100000],  // Start just above 0
+            "nice": false
+          },
+          "axis": {
+            "grid": true,
+            "ticks": true,
+            "tickValues": [1, 5000, 10000, 50000, 100000, 500000, 1100000],  // Manual tick values
+            "labelExpr": "datum.value < 10000 ? datum.value : datum.value / 1000 + 'k'"  // Format labels
+          }
+        },
+        "y": {
+          "field": "Diabetes_prevalence",
+          "type": "quantitative",
+          "title": "Diabetes Prevalence (% of population ages 20 to 79)",
+          "scale": {"domain": [0, 35]},
+          "axis": {"grid": true}
+        },
+        "color": {
+          "field": "Entity",
+          "type": "nominal",
+          "legend": {"title": "Country"}
+        },
+        "tooltip": [
+          {"field": "Entity", "type": "nominal", "title": "Country"},
+          {"field": "Diabetes_prevalence", "type": "quantitative", "title": "Diabetes Prevalence (%)"},
+          {"field": "GDP_per_capita", "type": "quantitative", "title": "GDP per capita"},
+          {"field": "Year", "type": "ordinal", "title": "Year"}
+        ]
       }
-    },
+    };
 
-
-
-
-    "y": {
-      "field": "Diabetes_prevalence",
-      "type": "quantitative",
-      "title": "Diabetes Prevalence (% of population ages 20 to 79)",
-      "scale": {"domain": [0, 35]},
-      "axis": {"grid": true}
-    },
-    "color": {
-      "field": "Entity",
-      "type": "nominal",
-      "legend": {"title": "Country"}
-    },
-    "tooltip": [
-      {"field": "Entity", "type": "nominal", "title": "Country"},
-      {"field": "Diabetes_prevalence", "type": "quantitative", "title": "Diabetes Prevalence (%)"},
-      {"field": "GDP_per_capita", "type": "quantitative", "title": "GDP per capita"},
-      {"field": "Year", "type": "ordinal", "title": "Year"}
-    ]
-  }
-};
-
+    let lineGraphSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "description": "A line graph showing the diabetes prevalence trend for Malaysian states (2013-2023).",
+      "width": "container",
+      "height": 600,
+      "data": {"values": []}, // Will be populated dynamically
+      "transform": [
+        {
+          "fold": ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"],
+          "as": ["Year", "Prevalence"]
+        },
+        {
+          "calculate": "toNumber(datum.Year)",
+          "as": "Year_num"
+        },
+        {
+          "calculate": "toNumber(datum.Prevalence)",
+          "as": "Prevalence_num"
+        },
+        {
+          "filter": "datum.Year_num <= year"
+        },
+        // Filter based on selected states
+        {
+          "filter": {"field": "State", "oneOf": []} // Will be updated dynamically
+        }
+      ],
+      "params": [
+        {
+          "name": "year",
+          "value": 2013
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "point": true,
+        "interpolate": "linear"
+      },
+      "encoding": {
+        "x": {
+          "field": "Year_num",
+          "type": "quantitative",
+          "title": "Year",
+          "axis": {"format": "d"},
+          "scale": {"domain": [2013, 2023]}
+        },
+        "y": {
+          "field": "Prevalence_num",
+          "type": "quantitative",
+          "title": "Diabetes Prevalence (%)",
+          "scale": {"domain": [0, 50]}
+        },
+        "color": {
+          "field": "State",
+          "type": "nominal",
+          "title": "State"
+        },
+        "tooltip": [
+          {"field": "State", "type": "nominal", "title": "State"},
+          {"field": "Year_num", "type": "quantitative", "title": "Year"},
+          {"field": "Prevalence_num", "type": "quantitative", "title": "Diabetes Prevalence (%)"}
+        ]
+      },
+      "config": {
+        "line": {"interpolate": "monotone"},
+        "animation": {"duration": 500}
+      }
+    };
 
     function updateSpec(selectedMetric) {
       // Update the title and description based on the selected metric
@@ -261,16 +375,140 @@
     // Initial render with Diabetes Density (%) as the default
     updateSpec("Diabetes Density (%)");
 
-    // Render the scatter plot initially (always present)
-    vegaEmbed("#scatterplot", scatterSpec, {mode: "vega-lite"}).then(result => {
-      const view = result.view;
-      view.runAfter(() => {
-        const data = view.data("source_0");  // Check the dataset
-        console.log('Loaded Scatter Plot Data:', data);  // Log the loaded data
-      });
-    }).catch(console.warn);
+    // Function to render the scatter plot
+    function renderScatterPlot() {
+      // Update the filter in the spec based on selected countries
+      scatterSpec.transform[3].filter.oneOf = selectedCountries;
 
-    // Add event listener to the dropdown
+      // Render the scatter plot
+      vegaEmbed("#scatterplot", scatterSpec, {mode: "vega-lite"}).then(result => {
+        const view = result.view;
+        view.runAfter(() => {
+          const data = view.data("source_0");  // Check the dataset
+          console.log('Loaded Scatter Plot Data:', data);  // Log the loaded data
+        });
+      }).catch(console.warn);
+    }
+
+    // Function to render the line graph
+    function renderLineGraph() {
+      // Update the filter in the spec based on selected states
+      lineGraphSpec.transform[4].filter.oneOf = selectedStates;
+
+      // Variables to control the animation
+      let isPlaying = false;
+      let animationInterval;
+      let year = 2013;
+
+      // Render the line graph with animation
+      vegaEmbed("#linegraph", lineGraphSpec, {mode: "vega-lite"}).then(result => {
+        const view = result.view;
+
+        function updateYear() {
+          if (year <= 2023) {
+            view.signal('year', year).run();
+            year++;
+          } else {
+            // Stop the animation when the last year is reached
+            clearInterval(animationInterval);
+            isPlaying = false;
+            document.getElementById('play').disabled = false;
+          }
+        }
+
+        // Play button event listener
+        document.getElementById('play').addEventListener('click', () => {
+          if (!isPlaying) {
+            isPlaying = true;
+            document.getElementById('play').disabled = true;
+            // Reset the year variable if starting over
+            if (year > 2023) year = 2013;
+            animationInterval = setInterval(updateYear, 1000); // Update every 1 second
+          }
+        });
+
+        // Pause button event listener
+        document.getElementById('pause').addEventListener('click', () => {
+          if (isPlaying) {
+            clearInterval(animationInterval);
+            isPlaying = false;
+            document.getElementById('play').disabled = false;
+          }
+        });
+
+        // Initial render
+        view.signal('year', year).run();
+
+      }).catch(console.warn);
+    }
+
+    // Load data for scatter plot and populate country dropdown
+    d3.csv("https://raw.githubusercontent.com/zlim0052/project-2/main/diabetes%20prevalence.csv").then(data => {
+      scatterData = data.filter(d => d.Year == 2021 && d['Diabetes prevalence (% of population ages 20 to 79)'] != null && d['GDP per capita'] != null);
+      scatterSpec.data.values = scatterData;
+
+      // Get unique countries
+      const countries = [...new Set(scatterData.map(d => d.Entity))].sort();
+
+      const countrySelect = document.getElementById('country-select');
+
+      countries.forEach(country => {
+        const option = document.createElement('option');
+        option.value = country;
+        option.text = country;
+        countrySelect.appendChild(option);
+      });
+
+      // Select all countries by default
+      selectedCountries = countries;
+      for (let i = 0; i < countrySelect.options.length; i++) {
+        countrySelect.options[i].selected = true;
+      }
+
+      // Event listener for country selection
+      countrySelect.addEventListener('change', () => {
+        selectedCountries = Array.from(countrySelect.selectedOptions).map(option => option.value);
+        renderScatterPlot();
+      });
+
+      // Initial render
+      renderScatterPlot();
+    });
+
+    // Load data for line graph and populate state dropdown
+    d3.csv("https://raw.githubusercontent.com/zlim0052/project-2/main/diabetes_patients_scatter_data.csv").then(data => {
+      lineGraphData = data;
+      lineGraphSpec.data.values = lineGraphData;
+
+      // Get unique states
+      const states = [...new Set(lineGraphData.map(d => d.State))].sort();
+
+      const stateSelect = document.getElementById('state-select');
+
+      states.forEach(state => {
+        const option = document.createElement('option');
+        option.value = state;
+        option.text = state;
+        stateSelect.appendChild(option);
+      });
+
+      // Select all states by default
+      selectedStates = states;
+      for (let i = 0; i < stateSelect.options.length; i++) {
+        stateSelect.options[i].selected = true;
+      }
+
+      // Event listener for state selection
+      stateSelect.addEventListener('change', () => {
+        selectedStates = Array.from(stateSelect.selectedOptions).map(option => option.value);
+        renderLineGraph();
+      });
+
+      // Initial render
+      renderLineGraph();
+    });
+
+    // Add event listener to the metric dropdown
     document.getElementById('metric-select').addEventListener('change', function(event) {
       const selectedMetric = event.target.value;
       updateSpec(selectedMetric);
