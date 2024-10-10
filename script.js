@@ -51,6 +51,24 @@ const countryToContinentMap = {
     'Yemen': 'Asia'
 };
 
+const ageGroupData = [
+  { "Age Group": "<18", "Patients": 289, "Percentage": 0.01 },
+  { "Age Group": "18-19", "Patients": 225, "Percentage": 0.01 },
+  { "Age Group": "20-24", "Patients": 1762, "Percentage": 0.10 },
+  { "Age Group": "25-29", "Patients": 6977, "Percentage": 0.35 },
+  { "Age Group": "30-34", "Patients": 18482, "Percentage": 0.94 },
+  { "Age Group": "35-39", "Patients": 40386, "Percentage": 2.07 },
+  { "Age Group": "40-44", "Patients": 68469, "Percentage": 3.52 },
+  { "Age Group": "45-49", "Patients": 104111, "Percentage": 5.34 },
+  { "Age Group": "50-54", "Patients": 154701, "Percentage": 7.94 },
+  { "Age Group": "55-59", "Patients": 232261, "Percentage": 11.93 },
+  { "Age Group": "60-64", "Patients": 296528, "Percentage": 15.24 },
+  { "Age Group": "65-69", "Patients": 312533, "Percentage": 16.10 },
+  { "Age Group": "70-74", "Patients": 274558, "Percentage": 14.10 },
+  { "Age Group": "75-79", "Patients": 191869, "Percentage": 9.85 },
+  { "Age Group": ">80", "Patients": 242982, "Percentage": 12.50 }
+];
+
 const metricDetails = {
     "Diabetes Density (%)": {
         "title": "Diabetes Density (%) by Region",
@@ -273,7 +291,10 @@ let lineGraphSpec = {
         "axis": {
           "grid": false,
           "ticks": false,
-          "format": "d"
+          "format": "d",
+          "titleFontSize": 16,
+          "labelFontSize": 12,
+          "titleFontWeight": "bold"
         },
         "scale": {"domain": [2013, 2023]},
       },
@@ -282,7 +303,13 @@ let lineGraphSpec = {
         "type": "quantitative",
         "title": "Diabetes Prevalence (%)",
         "scale": {"domain": [0, 50]},
-        "axis": {"grid": false, "ticks": false}
+        "axis": {
+          "grid": false, 
+          "ticks": false,
+          "titleFontSize": 16,
+          "labelFontSize": 12,
+          "titleFontWeight": "bold"
+        }
       },
       "color": {
         "field": "State",
@@ -307,103 +334,112 @@ const populationDataURL = 'https://raw.githubusercontent.com/zlim0052/project-2/
 
 // Function to render the dot chart
 function renderDotChart(data) {
-    const dotSpec = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "description": "A dot chart showing diabetes prevalence for male and female patients by state in 2023.",
-    "width": "container",
-    "height": 600,
-    "data": {
-        "values": data
-    },
-    "mark": "point",
-    "encoding": {
-        "x": {
-        "field": "State",
-        "type": "nominal",
-        "title": "State",
-        "axis": {
-            "labelAngle": 0,
-            "titleFontSize": 16,
-            "labelFontSize": 12,
-            "titleFontWeight": "bold"
-        }
-        },
-        "y": {
-        "field": "Diabetes Prevalence (%)",
-        "type": "quantitative",
-        "title": "Diabetes Prevalence (%)",
-        "axis": {
-            "titleFontSize": 16,
-            "labelFontSize": 12,
-            "titleFontWeight": "bold"
-        }
-        },
-        "color": {
-        "field": "Gender",
-        "type": "nominal",
-        "title": "Gender",
-        "legend": {"title": "Gender"}
-        },
-        "tooltip": [
-        {"field": "State", "type": "nominal", "title": "State"},
-        {"field": "Gender", "type": "nominal", "title": "Gender"},
-        {"field": "Diabetes Prevalence (%)", "type": "quantitative", "title": "Diabetes Prevalence (%)"}
-        ]
-    }
-    };
+  const dotSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "description": "A dot chart showing diabetes prevalence for male and female patients by state in 2023, with lines showing the difference.",
+      "width": "container",
+      "height": 600,
+      "data": {
+          "values": data
+      },
+      "layer": [
+          {
+              // Layer for the line connecting male and female points
+              "mark": {
+                  "type": "line",
+                  "stroke": "grey",
+                  "strokeWidth": 2
+              },
+              "encoding": {
+                  "x": {
+                      "field": "State",
+                      "type": "nominal",
+                      "axis": {
+                          "title": "State",
+                          "labelAngle": 0,
+                          "titleFontSize": 16,
+                          "labelFontSize": 12,
+                          "titleFontWeight": "bold"
+                      }
+                  },
+                  "y": {
+                      "field": "Diabetes Prevalence (%)",
+                      "type": "quantitative",
+                      "axis": {
+                          "title": "Diabetes Prevalence (%)",
+                          "grid": false,
+                          "ticks": false,
+                          "titleFontSize": 16,
+                          "labelFontSize": 12,
+                          "titleFontWeight": "bold"
+                      }
+                  },
+                  "detail": {
+                      "field": "State"   // Define that the line connects within the same state
+                  }
+              }
+          },
+          {
+              // Rule for hover interaction over the line to show tooltips
+              "mark": {
+                  "type": "rule",
+                  "strokeWidth": 30,
+                  "color": "transparent",  // Make the rule transparent but interactive
+                  "tooltip": true
+              },
+              "encoding": {
+                  "x": {
+                      "field": "State",
+                      "type": "nominal"
+                  },
+                  "y": {
+                      "field": "Diabetes Prevalence (%)",
+                      "type": "quantitative"
+                  },
+                  "tooltip": [
+                      {"field": "State", "type": "nominal", "title": "State"},
+                      {"field": "Numeric Difference", "type": "quantitative", "title": "Numeric Difference (Patients)"},
+                      {"field": "Percentage Difference", "type": "quantitative", "title": "Percentage Difference (%)"}
+                  ]
+              }
+          },
+          {
+              // Layer for the point marks
+              "mark": {
+                "type":"point",
+                "size": 200,
 
-    vegaEmbed("#dotchart", dotSpec).catch(console.warn);
+              },
+              "encoding": {
+                  "x": {
+                      "field": "State",
+                      "type": "nominal"
+                  },
+                  "y": {
+                      "field": "Diabetes Prevalence (%)",
+                      "type": "quantitative"
+                  },
+                  "color": {
+                      "field": "Gender",
+                      "type": "nominal",
+                      "legend": {"title": "Gender"}
+                  },
+                  "tooltip": [
+                      {"field": "State", "type": "nominal", "title": "State"},
+                      {"field": "Gender", "type": "nominal", "title": "Gender"},
+                      {"field": "Number of patients", "type": "quantitative", "title": "Number of patients"},
+                      {"field": "Diabetes Prevalence (%)", "type": "quantitative", "title": "Diabetes Prevalence (%)"},
+                  ]
+              }
+          }
+      ]
+  };
+
+  vegaEmbed("#dotchart", dotSpec).catch(console.warn);
 }
 
-// Function to render the dot chart
-function renderDotChart(data) {
-    const dotSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "description": "A dot chart showing diabetes prevalence for male and female patients by state in 2023.",
-        "width": "container",
-        "height": 600,
-        "data": {
-            "values": data
-        },
-        "mark": "point",
-        "encoding": {
-            "x": {
-                "field": "State",
-                "type": "nominal",
-                "title": "State",
-                "axis": {
-                    "labelAngle": 0,
-                    "titleFontSize": 16,
-                    "labelFontSize": 12,
-                    "titleFontWeight": "bold"
-                }
-            },
-            "y": {
-                "field": "Diabetes Prevalence (%)",
-                "type": "quantitative",
-                "title": "Diabetes Prevalence (%)",
-                "axis": {
-                    "titleFontSize": 16,
-                    "labelFontSize": 12,
-                    "titleFontWeight": "bold"
-                }
-            },
-            "color": {
-                "field": "Gender",
-                "type": "nominal",
-                "title": "Gender",
-                "legend": {"title": "Gender"}
-            },
-            "tooltip": [
-                {"field": "State", "type": "nominal", "title": "State"},
-                {"field": "Gender", "type": "nominal", "title": "Gender"},
-                {"field": "Diabetes Prevalence (%)", "type": "quantitative", "title": "Diabetes Prevalence (%)"}
-            ]
-        }
-    };
 
-    vegaEmbed("#dotchart", dotSpec).catch(console.warn);
-}
+
 
 // Function to calculate and process data for the dot chart
 function processAndRenderData(diabetesData, populationData) {
@@ -441,6 +477,10 @@ function processAndRenderData(diabetesData, populationData) {
                 if (malePopulation > 0 && femalePopulation > 0) {
                     const malePrevalence = (malePatients / (malePopulation*1000)) * 100;
                     const femalePrevalence = (femalePatients / (femalePopulation*1000)) * 100;
+
+                    const numericDifference = Math.abs(malePatients - femalePatients);
+                    const percentageDifference = Math.abs(malePrevalence - femalePrevalence);
+                    console.log(numericDifference)
                     console.log(femalePopulation);
                     console.log(femalePatients);
                     console.log(femalePrevalence);
@@ -448,13 +488,20 @@ function processAndRenderData(diabetesData, populationData) {
                     processedData.push({
                         "State": d.State,
                         "Gender": "Male",
-                        "Diabetes Prevalence (%)": malePrevalence
+                        "Number of patients": malePatients,
+                        "Diabetes Prevalence (%)": malePrevalence,
+                        "Numeric Difference": numericDifference,
+                        "Percentage Difference": percentageDifference
                     });
 
                     processedData.push({
+                        // the field name is matching the field name in the vega-lite specification
                         "State": d.State,
                         "Gender": "Female",
-                        "Diabetes Prevalence (%)": femalePrevalence
+                        "Number of patients": femalePatients,
+                        "Diabetes Prevalence (%)": femalePrevalence,
+                        "Numeric Difference": numericDifference,
+                        "Percentage Difference": percentageDifference
                     });
                 }
             }
@@ -540,27 +587,7 @@ function renderScatterPlot() {
 
 // Data Loading and Initialization
 document.addEventListener('DOMContentLoaded', () => {
-  // Dot Chart Data Loading
-//   d3.csv('https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/diabetes_patients_by_state_2023.csv')
-//     .then(diabetesData => {
-//       const processedData = [];
-//       diabetesData.forEach(d => {
-//         if (d.State !== "MALAYSIA") {
-//           const totalPatients = parseInt(d['No. of patients n (%)'].split(' ')[0].replace(/,/g, '')) || 0;
-//           const malePatients = parseInt(d['Male n (%)'].split(' ')[0].replace(/,/g, '')) || 0;
-//           const femalePatients = parseInt(d['Female n (%)'].split(' ')[0].replace(/,/g, '')) || 0;
 
-//           if (totalPatients > 0) {
-//             const malePrevalence = (malePatients / totalPatients) * 100;
-//             const femalePrevalence = (femalePatients / totalPatients) * 100;
-
-//             processedData.push({ "State": d.State, "Gender": "Male", "Diabetes Prevalence (%)": malePrevalence });
-//             processedData.push({ "State": d.State, "Gender": "Female", "Diabetes Prevalence (%)": femalePrevalence });
-//           }
-//         }
-//       });
-//       renderDotChart(processedData);
-//     }).catch(console.error);
 
   // Scatter Plot Data Loading
   const populationURL = "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/export.csv";
@@ -626,4 +653,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initial Map Rendering
   updateMapSpec("Diabetes Density (%)");
+});
+
+// Function to render Age Group Bar Chart
+function renderAgeGroupChart() {
+  const ageGroupSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "description": "Bar chart showing the number of diabetes patients by age group.",
+      "width": "container",
+      "height": 400,
+      "data": { "values": ageGroupData },
+      "mark": "bar",
+      "encoding": {
+          "x": {
+              "field": "Age Group",
+              "type": "nominal",
+              "axis": { "title": "Age Group" },
+              "sort": ["<18", "18-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", ">80"] 
+          },
+          "y": {
+              "field": "Patients",
+              "type": "quantitative",
+              "axis": { "title": "Number of Patients" }
+          },
+          "tooltip": [
+              { "field": "Age Group", "type": "nominal", "title": "Age Group" },
+              { "field": "Patients", "type": "quantitative", "title": "Number of Patients" },
+              { "field": "Percentage", "type": "quantitative", "title": "Percentage (%)" }
+          ]
+      },
+      "selection": {
+          "highlight": { "type": "single", "on": "mouseover", "empty": "none" }
+      }
+  };
+
+  vegaEmbed("#ageGroupChart", ageGroupSpec).catch(console.warn);
+}
+
+// Call the function to render Age Group Bar Chart
+document.addEventListener('DOMContentLoaded', () => {
+  renderAgeGroupChart();
 });
