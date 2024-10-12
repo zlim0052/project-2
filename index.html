@@ -36,13 +36,11 @@
     <p>
       This line graph shows the trend of diabetes prevalence over time for different states in Malaysia from 2013 to 2023.
     </p>
-    <div class="filter-container">
-      <label for="state-select">Select States:</label><br>
-      <select id="state-select" multiple></select>
-    </div>
     <div class="animation-controls">
-      <button id="play">Play</button>
+      <button id="play" style="display: none;">Play</button>
       <button id="pause">Pause</button>
+      <button id="showFull">Show Full Chart</button>
+      
     </div>
     <div id="linegraph" class="visualization"></div>
   </section>

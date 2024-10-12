@@ -52,22 +52,24 @@ const countryToContinentMap = {
 };
 
 const ageGroupData = [
-  { "Age Group": "<18", "Patients": 289, "Percentage": 0.01 },
-  { "Age Group": "18-19", "Patients": 225, "Percentage": 0.01 },
-  { "Age Group": "20-24", "Patients": 1762, "Percentage": 0.10 },
-  { "Age Group": "25-29", "Patients": 6977, "Percentage": 0.35 },
-  { "Age Group": "30-34", "Patients": 18482, "Percentage": 0.94 },
-  { "Age Group": "35-39", "Patients": 40386, "Percentage": 2.07 },
-  { "Age Group": "40-44", "Patients": 68469, "Percentage": 3.52 },
-  { "Age Group": "45-49", "Patients": 104111, "Percentage": 5.34 },
-  { "Age Group": "50-54", "Patients": 154701, "Percentage": 7.94 },
-  { "Age Group": "55-59", "Patients": 232261, "Percentage": 11.93 },
-  { "Age Group": "60-64", "Patients": 296528, "Percentage": 15.24 },
-  { "Age Group": "65-69", "Patients": 312533, "Percentage": 16.10 },
-  { "Age Group": "70-74", "Patients": 274558, "Percentage": 14.10 },
-  { "Age Group": "75-79", "Patients": 191869, "Percentage": 9.85 },
-  { "Age Group": ">80", "Patients": 242982, "Percentage": 12.50 }
+  { "id": "All Ages", "Patients": 1946133 }, // Root node without 'parent'
+  { "id": "<18", "parent": "All Ages", "Patients": 289 },
+  { "id": "18-19", "parent": "All Ages", "Patients": 225 },
+  { "id": "20-24", "parent": "All Ages", "Patients": 1762 },
+  { "id": "25-29", "parent": "All Ages", "Patients": 6977 },
+  { "id": "30-34", "parent": "All Ages", "Patients": 18482 },
+  { "id": "35-39", "parent": "All Ages", "Patients": 40386 },
+  { "id": "40-44", "parent": "All Ages", "Patients": 68469 },
+  { "id": "45-49", "parent": "All Ages", "Patients": 104111 },
+  { "id": "50-54", "parent": "All Ages", "Patients": 154701 },
+  { "id": "55-59", "parent": "All Ages", "Patients": 232261 },
+  { "id": "60-64", "parent": "All Ages", "Patients": 296528 },
+  { "id": "65-69", "parent": "All Ages", "Patients": 312533 },
+  { "id": "70-74", "parent": "All Ages", "Patients": 274558 },
+  { "id": "75-79", "parent": "All Ages", "Patients": 191869 },
+  { "id": ">80", "parent": "All Ages", "Patients": 242982 }
 ];
+
 
 const metricDetails = {
     "Diabetes Density (%)": {
@@ -155,95 +157,96 @@ const baseMapSpec = {
 
 // Scatter plot specification
 let scatterSpec = {
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "description": "A scatterplot showing diabetes prevalence versus GDP per capita, with bubble size representing population for 2021.",
-    "width": "container",
-    "height": 600,
-    "data": {"values": []},  // Will be populated dynamically
-    "transform": [
-        {
-        "filter": "datum.Year == 2021 && datum['Diabetes prevalence (% of population ages 20 to 79)'] != null && datum['GDP per capita'] != null"
-        },
-        {
-        "calculate": "toNumber(datum['GDP per capita'])",
-        "as": "GDP_per_capita"
-        },
-        {
-        "calculate": "toNumber(datum['Diabetes prevalence (% of population ages 20 to 79)'])",
-        "as": "Diabetes_prevalence"
-        },
-        {
-        "calculate": "toNumber(datum['population'])",
-        "as": "population"
-        }
-    ],
-    "mark": {
-        "type":"circle", 
-        "opacity": 0.7
-    },
-    "encoding": {
-        "x": {
-        "field": "GDP_per_capita",
-        "type": "quantitative",
-        "title": "GDP per capita (constant international-$)",
-        "scale": {
-            "type": "log",
-            "domain": [100, 900000],
-            "nice": false
-        },
-        "axis": {
-            "grid": false,
-            "ticks": false,
-            "labelExpr": "datum.value < 10000 ? datum.value : datum.value / 1000 + 'k'",
-            "tickValues": [100, 1000, 5000, 10000, 50000, 100000, 500000, 900000],
-            "titleFontSize": 16,
-            "labelFontSize": 12,
-            "titleFontWeight": "bold"
-        }
-        },
-        "y": {
-        "field": "Diabetes_prevalence",
-        "type": "quantitative",
-        "title": "Diabetes Prevalence (%)",
-        "scale": {
-            "domain": [0, 35],
-            "nice": true
-        },
-        "axis": {
-            "grid": false,
-            "ticks": false,
-            "tickCount": 7,
-            "labelFormat": ".0f",
-            "titleFontSize": 16,
-            "labelFontSize": 12,
-            "titleFontWeight": "bold"
-        }
-        },
-
-        "size": {
-        "field": "population",
-        "type": "quantitative",
-        "title": "Population",
-        "scale": {
-            "type": "linear",
-            "domain": [100000, 1400000000],  // Population range
-            "range": [100, 3000]  // Circle size range
-        },
-        "legend": {"title": "Population"}
-        },
-        "color": {
-        "field": "Entity",
-        "type": "nominal",
-        "legend": {"title": "Country"}
-        },
-        "tooltip": [
-        {"field": "Entity", "type": "nominal", "title": "Country"},
-        {"field": "Diabetes_prevalence", "type": "quantitative", "title": "Diabetes Prevalence (%)"},
-        {"field": "GDP_per_capita", "type": "quantitative", "title": "GDP per capita"},
-        {"field": "population", "type": "quantitative", "title": "Population"}
-        ]
-    }
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "A scatterplot showing diabetes prevalence versus GDP per capita, with bubble size representing population for 2021.",
+  "width": "container",
+  "height": 600,
+  "data": {"values": []},  // Will be populated dynamically
+  "transform": [
+      {
+          "filter": "datum.Year == 2021 && datum['Diabetes prevalence (% of population ages 20 to 79)'] != null && datum['GDP per capita'] != null"
+      },
+      {
+          "calculate": "toNumber(datum['GDP per capita'])",
+          "as": "GDP_per_capita"
+      },
+      {
+          "calculate": "toNumber(datum['Diabetes prevalence (% of population ages 20 to 79)'])",
+          "as": "Diabetes_prevalence"
+      },
+      {
+          "calculate": "toNumber(datum['population'])",
+          "as": "population"
+      }
+  ],
+  "mark": {
+      "type":"circle", 
+      "opacity": 0.7
+  },
+  "encoding": {
+      "x": {
+          "field": "GDP_per_capita",
+          "type": "quantitative",
+          "title": "GDP per capita (constant international-$)",
+          "scale": {
+              "type": "log",
+              "domain": [100, 900000]
+          },
+          "axis": {
+              "tickCount": 10,
+              "grid": false,
+              "labelExpr": "datum.value < 1000 ? datum.value : datum.value < 10000 ? datum.value / 1000 + 'k' : datum.value < 1000000 ? datum.value / 1000 + 'k' : datum.value / 1000000 + 'M'",
+              "tickValues": [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 900000],
+              "labelPadding": 5,
+              "titleFontSize": 16,
+              "labelFontSize": 12,
+              "titleFontWeight": "bold"
+          }
+      },
+      "y": {
+          "field": "Diabetes_prevalence",
+          "type": "quantitative",
+          "title": "Diabetes Prevalence (%)",
+          "scale": {
+              "domain": [0, 35],
+              "nice": true
+          },
+          "axis": {
+              "grid": false,
+              "ticks": false,
+              "tickCount": 7,
+              "labelFormat": ".0f",
+              "titleFontSize": 16,
+              "labelFontSize": 12,
+              "titleFontWeight": "bold"
+          }
+      },
+      "size": {
+          "field": "population",
+          "type": "quantitative",
+          "title": "Population",
+          "scale": {
+              "type": "linear",
+              "domain": [100000, 1400000000],  // Population range
+              "range": [100, 3000]  // Circle size range
+          },
+          "legend": {"title": "Population"}
+      },
+      "color": {
+          "field": "Entity",
+          "type": "nominal",
+          "legend": {"title": "Country"}
+      },
+      "tooltip": [
+          {"field": "Entity", "type": "nominal", "title": "Country"},
+          {"field": "Diabetes_prevalence", "type": "quantitative", "title": "Diabetes Prevalence (%)"},
+          {"field": "GDP_per_capita", "type": "quantitative", "title": "GDP per capita"},
+          {"field": "population", "type": "quantitative", "title": "Population"}
+      ]
+  }
 };
+
+
 
 let lineGraphSpec = {
     "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -268,9 +271,6 @@ let lineGraphSpec = {
         "filter": "datum.Year_num <= year"
       },
       // Filter based on selected states
-      {
-        "filter": {"field": "State", "oneOf": []} // Will be updated dynamically
-      }
     ],
     "params": [
       {
@@ -541,8 +541,8 @@ function updateMapSpec(selectedMetric) {
 }
 
 function renderLineGraph() {
-  lineGraphSpec.transform[4].filter.oneOf = selectedStates;
-  let isPlaying = false;
+  lineGraphSpec.transform[3].filter.oneOf = selectedStates; // Adjust index due to the removed filter
+  let isPlaying = true;
   let animationInterval;
   let year = 2013;
 
@@ -554,27 +554,42 @@ function renderLineGraph() {
         view.signal('year', year).run();
         year++;
       } else {
-        clearInterval(animationInterval);
-        isPlaying = false;
-        document.getElementById('play').disabled = false;
+        year = 2013; // Reset the year to 2013 when 2023 is reached
+        view.signal('year', year).run(); // Reset to the beginning
       }
     }
 
+    // Start the animation automatically
+    animationInterval = setInterval(updateYear, 300);
+
+    // Play button functionality
     document.getElementById('play').addEventListener('click', () => {
       if (!isPlaying) {
         isPlaying = true;
-        document.getElementById('play').disabled = true;
-        if (year > 2023) year = 2013;
-        animationInterval = setInterval(updateYear, 300);
+        document.getElementById('play').style.display = "none";  // Hide play button
+        document.getElementById('pause').style.display = "inline"; // Show pause button
+        animationInterval = setInterval(updateYear, 300); // Resume the animation
       }
     });
 
+    // Pause button functionality
     document.getElementById('pause').addEventListener('click', () => {
       if (isPlaying) {
-        clearInterval(animationInterval);
+        clearInterval(animationInterval); // Stop the animation
         isPlaying = false;
-        document.getElementById('play').disabled = false;
+        document.getElementById('play').style.display = "inline";  // Show play button
+        document.getElementById('pause').style.display = "none";  // Hide pause button
       }
+    });
+
+    // Show the complete chart immediately
+    document.getElementById('showFull').addEventListener('click', () => {
+      clearInterval(animationInterval); // Stop the animation
+      isPlaying = false;
+      document.getElementById('play').style.display = "inline";  // Show play button
+      document.getElementById('pause').style.display = "none";  // Hide pause button
+      year = 2023; // Set to the last year
+      view.signal('year', 2023).run(); // Display all data
     });
 
     view.signal('year', year).run();
@@ -623,25 +638,6 @@ document.addEventListener('DOMContentLoaded', () => {
       lineGraphData = data;
       lineGraphSpec.data.values = lineGraphData;
 
-      const states = [...new Set(lineGraphData.map(d => d.State))].sort();
-      const stateSelect = document.getElementById('state-select');
-      states.forEach(state => {
-        const option = document.createElement('option');
-        option.value = state;
-        option.text = state;
-        stateSelect.appendChild(option);
-      });
-
-      selectedStates = states;
-      for (let i = 0; i < stateSelect.options.length; i++) {
-        stateSelect.options[i].selected = true;
-      }
-
-      stateSelect.addEventListener('change', () => {
-        selectedStates = Array.from(stateSelect.selectedOptions).map(option => option.value);
-        renderLineGraph();
-      });
-
       renderLineGraph();
     });
 
@@ -658,39 +654,51 @@ document.addEventListener('DOMContentLoaded', () => {
 // Function to render Age Group Bar Chart
 function renderAgeGroupChart() {
   const ageGroupSpec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "description": "Bar chart showing the number of diabetes patients by age group.",
-      "width": "container",
-      "height": 400,
-      "data": { "values": ageGroupData },
-      "mark": "bar",
-      "encoding": {
-          "x": {
-              "field": "Age Group",
-              "type": "nominal",
-              "axis": { "title": "Age Group" },
-              "sort": ["<18", "18-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", ">80"] 
-          },
-          "y": {
-              "field": "Patients",
-              "type": "quantitative",
-              "axis": { "title": "Number of Patients" }
-          },
-          "tooltip": [
-              { "field": "Age Group", "type": "nominal", "title": "Age Group" },
-              { "field": "Patients", "type": "quantitative", "title": "Number of Patients" },
-              { "field": "Percentage", "type": "quantitative", "title": "Percentage (%)" }
-          ]
-      },
-      "selection": {
-          "highlight": { "type": "single", "on": "mouseover", "empty": "none" }
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "description": "Interactive treemap showing the number of diabetes patients by age group.",
+    "data": { "values": ageGroupData },
+    "width": "container", 
+    "height": 600,
+    "transform": [
+      {
+        "type": "filter",
+        "expr": "datum.parent !== 'All Ages'"
       }
+    ],
+    "mark": {
+      "type": "bar",
+      "tooltip": true
+    },
+    "encoding": {
+      "x": {
+        "field": "id",
+        "type": "nominal",
+        "axis": { "title": "Age Group", "labelAngle": 0 }
+      },
+      "y": {
+        "field": "Patients",
+        "type": "quantitative",
+        "axis": { "title": "Number of Patients" }
+      },
+      "color": {
+        "field": "id",
+        "type": "nominal",
+        "legend": null
+      },
+      "tooltip": [
+        { "field": "id", "type": "nominal", "title": "Age Group" },
+        { "field": "Patients", "type": "quantitative", "title": "Patients" }
+      ]
+    },
+    "selection": {
+      "highlight": { "type": "single", "empty": "none", "on": "mouseover" }
+    }
   };
-
+  
   vegaEmbed("#ageGroupChart", ageGroupSpec).catch(console.warn);
 }
 
-// Call the function to render Age Group Bar Chart
 document.addEventListener('DOMContentLoaded', () => {
   renderAgeGroupChart();
 });
+
