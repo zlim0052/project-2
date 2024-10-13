@@ -14,35 +14,34 @@
   <!-- Navigation Header -->
   <nav>
     <a href="index.html">Home</a>
+    <a href="#globalMap-section">Global Map</a>
     <a href="#scatterplot-section">Scatter Plot</a>
-    <a href="#linegraph-section">Line Graph</a>
+    <a href="#barChartRace-section">Bar Chart Race</a>
     <a href="#map-section">Map</a>
-    <a href="#dotchart-section">Dot Chart</a>
-    <a href="#barchart-section">Bar Chart</a>
+    <a href="#dotchart-section">Gender Chart</a>
+    <a href="#ageGroupChart-section">Age Group Chart</a>
   </nav>
+
+  <header>
+    <h1 id="main-title">Data Visualizations on Diabetes Trends</h1>
+  </header>
+
+  <!-- Global Map Section -->
+  <section id="globalMap-section" class="visualization-section">
+    <h2>Global Diabetes Prevalence Map (2021)</h2>
+    <p>
+      This Global Diabetes Prevalence Map (2021) shows the diabetes rates among individuals aged 20 to 79 worldwide. Darker shades indicate higher prevalence, with <strong>Pakistan having the highest rate</strong>, and <strong>Malaysia among the countries with elevated rates</strong>.
+    </p>
+    <div id="globalMap" class="visualization"></div>
+  </section>
 
   <!-- Scatter Plot Section -->
   <section id="scatterplot-section" class="visualization-section">
-    <h2>Diabetes Prevalence by GDP per Capita in Various Countries (2021)</h2>
+    <h2>Diabetes Prevalence by GDP per Capita in Asia Countries (2021)</h2>
     <p>
-      This scatter plot visualizes the relationship between GDP per capita and diabetes prevalence among individuals aged 20 to 79 across different countries in the year 2021. The size and color of each dot correspond to the diabetes prevalence in a specific country. Countries with higher GDP per capita may show different patterns in diabetes prevalence, and this chart uses logarithmic scaling for GDP to better represent a wide range of income levels. Select countries from the dropdown to focus on specific regions or compare trends across multiple nations.
+      In 2021, diabetes prevalence varied across countries, influenced by both economic status and population size. <strong>Higher GDP per capita</strong> often corresponds to different diabetes trends, especially in Asia, where large populations and varying income levels reveal unique patterns in health outcomes.
     </p>
     <div id="scatterplot" class="visualization"></div>
-  </section>
-
-  <!-- Line Graph Section -->
-  <section id="linegraph-section" class="visualization-section">
-    <h2>Diabetes Prevalence in Malaysian States (2013-2023)</h2>
-    <p>
-      This line graph shows the trend of diabetes prevalence over time for different states in Malaysia from 2013 to 2023.
-    </p>
-    <div class="animation-controls">
-      <button id="play" style="display: none;">Play</button>
-      <button id="pause">Pause</button>
-      <button id="showFull">Show Full Chart</button>
-      
-    </div>
-    <div id="linegraph" class="visualization"></div>
   </section>
 
   <!-- Map Visualization Section -->
@@ -55,31 +54,80 @@
         <option value="Dyslipidemia Prevalence (%)">Dyslipidemia Prevalence (%)</option>
       </select>
     </div>
-    <h2 id="map-title">Diabetes Density (%) by Region</h2>
+    <h2 id="map-title">Diabetes Density by Region (2023)</h2>
     <p id="map-description">
-      This map shows the Diabetes Density (%) by region in Malaysia. Darker colors indicate higher rates.
+      In Malaysia, diabetes prevalence varies significantly across regions. <strong>Perlis reports the highest rate</strong>, with over 12% of its population affected. States like <strong>Negeri Sembilan and Melaka</strong> also show concerning rates, exceeding 10%. The darker shades on the map represent areas with higher diabetes density, highlighting the need for targeted health interventions in these regions.
     </p>
     <div id="map" class="visualization"></div>
   </section>
 
-  <!-- Dot Chart Section -->
+  <!-- Gender Chart Section -->
   <section id="dotchart-section" class="visualization-section">
-    <h2>Diabetes Prevalence by State (2023)</h2>
-    <p>
-      This dot chart visualizes the calculated diabetes prevalence (%) for male and female patients by state in 2023.
-    </p>
-    <div id="dotchart" class="visualization"></div>
+    <div class="visualization-row">
+      <!-- Gender Chart -->
+      <div class="visualization-subsection chart-container">
+        <div id="dotchart" class="visualization"></div>
+      </div>
+      <!-- Title and Description Container -->
+      <div class="visualization-subsection description-container">
+        <h2>Diabetes Prevalence by State and Gender (2023)</h2>
+        <p>
+          In 2023, diabetes prevalence in Malaysia shows notable gender differences across states. <span style="color:rgb(0, 166, 255);"><strong>Female</strong></span> patients generally have <strong>higher rates</strong> compared to <span style="color:orange;"><strong>males</strong></span>, as seen in states like <strong>Perlis</strong> and <strong>Negeri Sembilan</strong>. The variation between genders is represented by the distance between the dots, highlighting the gap in diabetes prevalence across different regions. These trends may point to gender-specific health factors or access to healthcare services that impact diabetes management differently for men and women in each state.
+        </p>
+      </div>
+    </div>
   </section>
 
-  <!-- bar chart section -->
-  <section id="barchart-section" class="visualization-section">
-    <h2>Diabetes Prevalence by State (2023)</h2>
+
+  <!-- Age Group Chart Section -->
+  <section id="ageGroupChart-section" class="visualization-section">
+    <div class="visualization-row">
+      <!-- Title and Description Container -->
+      <div class="visualization-subsection description-container">
+        <h2>Number of Diabetes Patients by Age Group (2023)</h2>
+        <p>
+          Diabetes affects a wide range of age groups, with the highest number of patients between ages <strong>65-69</strong>, followed by those aged <strong>60-64</strong> and <strong>70-74</strong>. Older adults, particularly those over <strong>50</strong>, represent the majority of cases, while younger age groups have significantly fewer patients. This trend highlights the increased diabetes risk with aging.
+        </p>
+      </div>
+      <!-- Age Group Chart -->
+      <div class="visualization-subsection chart-container">
+        <div id="ageGroupChart" class="visualization"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Bar Chart Race Section -->
+  <section id="barChartRace-section" class="visualization-section">
+    <h2>Progress in Diabetes Management Across Malaysian States (2013-2023)</h2>
     <p>
-      This bar chart visualizes the calculated diabetes prevalence 
+      From 2013 to 2023, the proportion of Type 2 diabetes patients in Malaysia achieving optimal HbA1c levels (≤6.5%) has fluctuated across states. <strong>Sabah consistently shows high percentages</strong>, indicating better diabetes management, while other states like <strong>Kuala Lumpur and Melaka have also made notable progress</strong>. However, some regions see slower improvement, highlighting disparities in healthcare outcomes across the country.
     </p>
-    <div id="ageGroupChart" class="visualization"></div>
+    <div class="animation-controls">
+      <button id="playBarChart">Play</button>
+      <button id="pauseBarChart" style="display: none;">Pause</button>
+    </div>
+    <!-- Timestamp Control -->
+    <div id="timestamp-container">
+      <div id="timestamp-description">Select a year to view the data.</div>
+      <div id="timestamp-years">
+        <!-- Years will be populated dynamically -->
+      </div>
+    </div>
+    <div id="barChartRace" class="visualization"></div>
+  </section>
 
   <!-- External JavaScript -->
   <script src="script.js"></script>
+
+  <footer id="source-section">
+    <p>
+      Source: 
+      <a href="https://www.moh.gov.my/moh/resources/Penerbitan/Laporan/Umum/NDR_Report_2023_Final.pdf" target="_blank">Portal Rasmi Kementerian Kesihatan Malaysia</a> 
+      and 
+      <a href="https://ourworldindata.org/grapher/diabetes-prevalence?time=2021" target="_blank">Our World in Data</a>
+    </p>
+  </footer>
+
 </body>
 </html>

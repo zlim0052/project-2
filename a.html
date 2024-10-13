@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Global Diabetes Prevalence Map (2021)</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+  <!-- Container for the map -->
+  <div id="map" class="visualization"></div>
+
+  <script>
+    let mapSpec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "description": "A map showing diabetes prevalence by country in 2021.",
+      "width": "container",
+      "height": 600,
+      "projection": {
+        "type": "equalEarth"
+      },
+      "layer": [
+        // Ocean Layer
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/7_others/oceans.topojson",
+            "format": {"type": "topojson", "feature": "oceans"}
+          },
+          "mark": {"type": "geoshape", "fill": "lightblue"}
+        },
+        // Base Map Layer
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/FIT3179/Vega-Lite/main/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+            "format": {
+              "type": "topojson",
+              "feature": "ne_110m_admin_0_countries"
+            }
+          },
+          "transform": [
+            // Correct names for United States, South Sudan, Central African Republic, Democratic Republic of Congo, and Côte d'Ivoire
+            {
+              "calculate": "datum.properties.NAME == 'United States of America' ? 'United States' : " +
+                           "datum.properties.NAME == 'S. Sudan' || datum.properties.NAME == 'South Sudan' ? 'South Sudan' : " +
+                           "datum.properties.NAME == 'Central African Rep.' ? 'Central African Republic' : " +
+                           "datum.properties.NAME == 'Dem. Rep. Congo' ? 'Congo' : " +
+                           "datum.properties.NAME == 'Côte d\\'Ivoire' ? 'Cote d\\'Ivoire' : " +  // Escaped apostrophes
+                           "datum.properties.NAME",
+              "as": "CountryName"
+            },
+            {
+              "lookup": "CountryName",
+              "from": {
+                "data": {
+                  "url": "https://raw.githubusercontent.com/zlim0052/project-2/refs/heads/main/diabetes-prevalence.csv"
+                },
+                "key": "Entity",
+                "fields": ["Diabetes prevalence (% of population ages 20 to 79)"]
+              }
+            },
+            {
+              "filter": "datum['Diabetes prevalence (% of population ages 20 to 79)'] != null"  // Ensure data points exist
+            }
+          ],
+          "mark": {
+            "type": "geoshape",
+            "stroke": "white"
+          },
+          "encoding": {
+            "color": {
+              "field": "Diabetes prevalence (% of population ages 20 to 79)",
+              "type": "quantitative",
+              "scale": {
+                "type": "threshold",
+                "domain": [2, 4, 6, 8, 10, 12.5, 15, 17.5, 20],  // Exact intervals used in the image
+                "range": ["#ffffe0", "#ffeebb", "#facd75", "#fcac32", "#ff8926", "#ff4d0d", "#eb2d02", "#ba1c02", "#9e0b00", "#751202"]  // Yellow to dark red
+              },
+              "legend": {
+                "title": "Diabetes Prevalence (%)",
+                "orient": "right"  // Place the legend on the right side
+              }
+            },
+            "tooltip": [
+              {"field": "properties.NAME", "type": "nominal", "title": "Country"},
+              {
+                "field": "Diabetes prevalence (% of population ages 20 to 79)",
+                "type": "quantitative",
+                "title": "Diabetes Prevalence (%)",
+                "format": ".1f",
+                "condition": {
+                  "test": "datum['Diabetes prevalence (% of population ages 20 to 79)'] == null",
+                  "value": "No data"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    };
+
+    // Embedding the map
+    vegaEmbed('#map', mapSpec)
+      .then(result => {
+        console.log("Visualization Spec:", result.spec);  // Log the full specification
+
+        // Wait for the view to finish running
+        result.view.runAfter(() => {
+          const datasets = result.view.data();  // Get all available datasets
+          console.log("Available datasets:", datasets);
+        });
+
+        console.log("View Object:", result.view);  // Log the full view object for detailed inspection
+      })
+      .catch(console.error);
+  </script>
+</body>
+</html>
